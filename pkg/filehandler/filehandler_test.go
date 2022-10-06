@@ -1,7 +1,6 @@
-package files_test
+package filehandler
 
 import (
-	"gz-beat-shipper/pkg/filehandler"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -12,7 +11,7 @@ import (
 // Check GNU zip decompress func works
 func TestGzipFileReader(t *testing.T) {
 	gzTestFileName := "test.txt.gz"
-	gzipReader := filehandler.GzipFileReader(gzTestFileName)
+	gzipReader := GzipFileReader(gzTestFileName)
 	text, _ := ioutil.ReadAll(gzipReader)
 	assert := assert.New(t)
 	assert.Equal("This is the content of the compressed file\n", string(text))
@@ -23,8 +22,8 @@ func TestGzipFileReader(t *testing.T) {
 func TestCopyGzipContentToFile(t *testing.T) {
 	gzTestFileName := "test.txt.gz"
 	destinationFile := "test.txt"
-	gzipReader := filehandler.GzipFileReader(gzTestFileName)
-	filehandler.CopyGzipContentToFile(gzipReader, destinationFile)
+	gzipReader := GzipFileReader(gzTestFileName)
+	CopyGzipContentToFile(gzipReader, destinationFile)
 
 	assert := assert.New(t)
 	assert.True(existFile(destinationFile))
@@ -35,10 +34,10 @@ func TestCopyGzipContentToFile(t *testing.T) {
 // Test if remove the last extension in a right way
 func TestGetFileNameWithoutLastExtension(t *testing.T) {
 	gzFileName := "test.txt.gz"
-	txtFileName := filehandler.GetFileNameWithoutLastExtension(gzFileName)
+	txtFileName := GetFileNameWithoutLastExtension(gzFileName)
 	assert := assert.New(t)
 	assert.Equal("test.txt", txtFileName)
-	fileName := filehandler.GetFileNameWithoutLastExtension(txtFileName)
+	fileName := GetFileNameWithoutLastExtension(txtFileName)
 	assert.Equal("test", fileName)
 }
 
