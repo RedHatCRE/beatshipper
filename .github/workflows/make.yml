@@ -1,3 +1,4 @@
+---
 name: "gz-beat-shipper"
 
 on:
@@ -9,7 +10,7 @@ on:
     - main 
 
 jobs:
-    build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: "Clone repository"
@@ -18,5 +19,5 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ">=1.17.0"
-      - name: "Run tests - All"
-        run: go test -v ./...
+      - name: "Run Makefile"
+        run: make
