@@ -24,7 +24,7 @@ func GzipFileReader(gzFilePath string) *gzip.Reader {
 		log.Fatal(err)
 	}
 
-	defer gzipReader.Close()
+	gzipReader.Close()
 
 	log.Print("Content opened of: " + gzFilePath)
 	return gzipReader
