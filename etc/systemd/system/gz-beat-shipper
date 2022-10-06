@@ -1,0 +1,17 @@
+[Unit]
+Description=GNU ZIP Beat Shipper Service
+Documentation=https://github.com/RedHatCRE/gz-beat-shipper/blob/main/README.md
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/gz-beat-shipper
+Type=simple
+ExecStart=/usr/sbin/gz-beat-shipper
+Restart=on-failure
+RestartSec=10
+# TODO: Do we want to keep the logs in syslog?
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gz-beat-shipper
+[Install]
+WantedBy=multi-user.target
