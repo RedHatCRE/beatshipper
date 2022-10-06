@@ -1,5 +1,6 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
-
 # IDEs
 .vscode/
+.env # ignore local environment variable file
+bin/ # ingore built executables

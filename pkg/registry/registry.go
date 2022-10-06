@@ -19,18 +19,18 @@ func (r *Registry) AppendFileToRegistry(f File) {
 	r.ParsedFiles = append(r.ParsedFiles, f)
 }
 
-// Convert Registry Struct to bytes in JSON
-func ConvertRegistryToJSON(registry Registry) []byte {
-	jsonRegistry, err := json.Marshal(registry)
+// Convert Registry Struct to a JSON string
+func (r *Registry) JSON() string {
+	jsonRegistry, err := json.Marshal(r)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return jsonRegistry
+	return string(jsonRegistry)
 }
 
 // Convert a JSON from bytes to the Registry struct format
-func ConvertJSONToRegistry(jsonRegistry []byte, registry Registry) {
-	if err := json.Unmarshal(jsonRegistry, &registry); err != nil {
+func ConvertJSONToRegistry(jsonRegistry []byte, registry *Registry) {
+	if err := json.Unmarshal(jsonRegistry, registry); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -58,6 +58,6 @@ func StoreFilesIntoRegistry(fileNames []string, r Registry, registryFileLocation
 		r.AppendFileToRegistry(f)
 		log.Print("Added to registry: ", f)
 	}
-	j := ConvertRegistryToJSON(r)
-	filehandler.WriteFileContent(registryFileLocation, j)
+	j := r.JSON()
+	filehandler.WriteFileContent(registryFileLocation, []byte(j))
 }
