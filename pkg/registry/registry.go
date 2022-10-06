@@ -36,7 +36,7 @@ func ConvertJSONToRegistry(jsonRegistry []byte, registry *Registry) {
 }
 
 // Check if a file in a string way exists in the Registry struct format
-func IsFileInRegistry(f string, r Registry) bool {
+func (r *Registry) IsFileInRegistry(f string) bool {
 	for _, parsedFile := range r.ParsedFiles {
 		if parsedFile.Name == f {
 			return true
