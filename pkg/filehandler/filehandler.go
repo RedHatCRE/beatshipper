@@ -16,14 +16,12 @@ func GzipFileReader(gzFilePath string) *gzip.Reader {
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	gzipReader, err := gzip.NewReader(gzipFile)
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	defer gzipReader.Close()
@@ -38,7 +36,6 @@ func CopyGzipContentToFile(gzipReader io.Reader, destinationPath string) {
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	defer fileWriter.Close()
@@ -47,7 +44,6 @@ func CopyGzipContentToFile(gzipReader io.Reader, destinationPath string) {
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	log.Print("Content copied to: " + destinationPath)
@@ -88,5 +84,8 @@ func GetFileContent(fileName string) string {
 }
 
 func WriteFileContent(fileName string, data []byte) {
-	_ = ioutil.WriteFile(fileName, data, 0644)
+	err := ioutil.WriteFile(fileName, data, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
