@@ -1,9 +1,9 @@
 %define name    gz-beat-shipper
-%define version 0.1
+%define version 0.0.1
 %define _rpmdir %{getenv:GITHUB_WORKSPACE}/
 
 Name:           %{name}
-Version:        0.0.1
+Version:        %{version}
 Release:        1%{?dist}
 Summary:        GNU ZIP beats shipper
 License:        GPL
@@ -20,9 +20,6 @@ Since there’s no way to send GNU zip files through filebeat, this service will
 echo ${GITHUB_WORKSPACE}
 
 %post
-# TODO: Uncomment and finish when this is merged: https://github.com/RedHatCRE/gz-beat-shipper/pull/2
-# systemctl enable gz-beat-shipper.service
-# systemctl start gz-beat-shipper.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
