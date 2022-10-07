@@ -21,3 +21,20 @@ jobs:
           go-version: ">=1.18.0"
       - name: "Run Makefile"
         run: make
+  packaging:
+    runs-on: ubuntu-latest
+    container:
+      image: rockylinux:9
+    steps:
+      - name: "Clone repository"
+        uses: actions/checkout@v2
+      - name: "Build RPM package"
+        shell: bash
+        run: |
+          dnf install rpm-build -y
+          rpmbuild -v -bb --define "_topdir `echo \"${GITHUB_WORKSPACE}\"`" packing_manager_specs/RPM/rpmbuild/SPECS/gz-beat-shipper.spec
+      - name: "Publish RPM package as artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "RPM"
+          path: ./x86_64/
