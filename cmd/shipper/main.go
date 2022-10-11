@@ -39,7 +39,7 @@ func setup() (configs.Configuration, *registry.Registry) {
 
 func main() {
 
-	config, r := setup()
+	config, register := setup()
 
 	recheckTime := config.GetRecheckDuration()
 
@@ -53,7 +53,7 @@ func main() {
 		// We need to re-read the content of the registry each time we wanna check if
 		// there are new files to process
 		registryFileContent := filehandler.GetFileContent(config.Registry)
-		registry.ConvertJSONToRegistry([]byte(registryFileContent), r)
+		registry.ConvertJSONToRegistry([]byte(registryFileContent), register)
 
 		// Globbing all paths according to the pattern
 		gzFilesPaths, err := filepath.Glob(config.Path)
@@ -68,7 +68,7 @@ func main() {
 			continue
 		}
 
-		gzFilesToProcess := getGzNotProcessed(gzFilesPaths, *r)
+		gzFilesToProcess := getGzNotProcessed(gzFilesPaths, *register)
 
 		if len(gzFilesToProcess) < 1 {
 			log.Print("There aren't gz files to process for " + config.Path)
@@ -82,7 +82,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		registry.StoreFilesIntoRegistry(gzFilesToProcess, *r, config.Registry)
+		registry.StoreFilesIntoRegistry(gzFilesToProcess, *register, config.Registry)
 
 		time.Sleep(recheckTime)
 	}
@@ -99,13 +99,17 @@ func getGzNotProcessed(gzFiles []string, r registry.Registry) []string {
 	return gzFilesNotProcessed
 }
 
-// Unzip the Gz in the same directory where they are
+// Get the content of the GNU Zip files and create a batch with event interface
+// That logstash will be able to process
 func getBatchToSend(gzFiles []string) []interface{} {
-	batch := make([]interface{}, 1)
-	i := 0
+	var (
+		batch []interface{}
+		i     = 0
+	)
 	for _, gzFilePath := range gzFiles {
 		log.Print("Processing: " + gzFilePath)
-		batch[i] = makeEvent(filehandler.GetGzFileContent(gzFilePath))
+		batch = append(batch, makeEvent(filehandler.GetGzFileContent(gzFilePath)))
+		i++
 	}
 	return batch
 }
