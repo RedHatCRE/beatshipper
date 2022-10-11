@@ -102,14 +102,10 @@ func getGzNotProcessed(gzFiles []string, r registry.Registry) []string {
 // Get the content of the GNU Zip files and create a batch with event interface
 // That logstash will be able to process
 func getBatchToSend(gzFiles []string) []interface{} {
-	var (
-		batch []interface{}
-		i     = 0
-	)
+	var batch []interface{}
 	for _, gzFilePath := range gzFiles {
 		log.Print("Processing: " + gzFilePath)
 		batch = append(batch, makeEvent(filehandler.GetGzFileContent(gzFilePath)))
-		i++
 	}
 	return batch
 }
