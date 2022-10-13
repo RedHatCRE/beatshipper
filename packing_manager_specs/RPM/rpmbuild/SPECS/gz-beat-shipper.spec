@@ -23,7 +23,7 @@ install -m 0755 -d %{buildroot}/usr/sbin/
 install -m 0755 -d %{buildroot}/lib/systemd/system/
 
 # Copy files with right permissions:
-install -m 0644 %{_rpmdir}%{name} %{buildroot}/usr/sbin/%{name}
+install -m 0755 %{_rpmdir}%{name} %{buildroot}/usr/sbin/%{name}
 install -m 0644 %{_rpmdir}/gz-beat-shipper-conf.yml %{buildroot}/etc/%{name}/
 install -m 0644 %{_rpmdir}/lib/systemd/system/gz-beat-shipper.service %{buildroot}/lib/systemd/system/
 
