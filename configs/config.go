@@ -8,7 +8,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-const ConfigurationPath = "gz-beat-shipper-conf.yml"
+const ConfigurationPath = "/etc/gz-beat-shipper/gz-beat-shipper-conf.yml"
 
 type Configuration struct {
 	Host     string `yaml:"host"`

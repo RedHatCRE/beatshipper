@@ -8,8 +8,7 @@ Release:        1%{?dist}
 Summary:        GNU ZIP beats shipper
 License:        GPL
 Requires:       bash
-Source:         %{name}‑%{version}.tar.gz
-URL:            https://github.com/RedHatCRE/gz-beat-shipper/
+URL:            https://github.com/RedHatCRE/%{name}/
 
 %description
 Since there’s no way to send GNU zip files through filebeat, this service will be responsible for checking if there are new .gz files based on a path that we’ll explode using globbing, decompress them, send them using the filebeat service with the provided configuration and store them in a local file registry.
@@ -17,7 +16,12 @@ Since there’s no way to send GNU zip files through filebeat, this service will
 %prep
 
 %install
-echo ${GITHUB_WORKSPACE}
+
+install -m 0755 -d %{buildroot}/etc/%{name}
+install -m 0755 -d %{buildroot}/usr/sbin/
+install -m 0644 %{_rpmdir}%{name} %{buildroot}/usr/sbin/%{name}
+install -m 0644 %{_rpmdir}/gz-beat-shipper-conf.yml %{buildroot}/etc/%{name}/
+install -m 0644 %{_rpmdir}/lib/systemd/system/gz-beat-shipper.service %{buildroot}/lib/systemd/system/
 
 %post
 
@@ -25,6 +29,9 @@ echo ${GITHUB_WORKSPACE}
 rm -rf $RPM_BUILD_ROOT
 
 %files
+/usr/sbin/%{name}
+/etc/%{name}/gz-beat-shipper-conf.yml
+/lib/systemd/system/gz-beat-shipper.service
 
 %changelog
  # END SPEC
