@@ -79,7 +79,7 @@ func CreateEmptyJsonFileIfNotExists(fileName string) {
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			ioutil.WriteFile(fileName, []byte("{}"), 0)
+			ioutil.WriteFile(fileName, []byte("{}"), 400)
 		}
 	}
 }
@@ -102,4 +102,25 @@ func WriteFileContent(fileName string, data []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func GetGzFileContent(fileName string) string {
+	fh, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fh.Close()
+
+	fhGz, err := gzip.NewReader(fh)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fhGz.Close()
+
+	contentBytes, err := ioutil.ReadAll(fhGz)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(contentBytes)
 }
