@@ -1,4 +1,4 @@
-%define name    gz-beat-shipper
+%define name    beatshipper
 %define version 0.0.1
 %define _rpmdir %{getenv:GITHUB_WORKSPACE}/
 
@@ -24,8 +24,8 @@ install -m 0755 -d %{buildroot}/lib/systemd/system/
 
 # Copy files with right permissions:
 install -m 0755 %{_rpmdir}%{name} %{buildroot}/usr/sbin/%{name}
-install -m 0644 %{_rpmdir}/gz-beat-shipper-conf.yml %{buildroot}/etc/%{name}/
-install -m 0644 %{_rpmdir}/lib/systemd/system/gz-beat-shipper.service %{buildroot}/lib/systemd/system/
+install -m 0644 %{_rpmdir}/beatshipper-conf.yml %{buildroot}/etc/%{name}/
+install -m 0644 %{_rpmdir}/lib/systemd/system/beatshipper.service %{buildroot}/lib/systemd/system/
 
 %post
 
@@ -34,8 +34,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 /usr/sbin/%{name}
-/etc/%{name}/gz-beat-shipper-conf.yml
-/lib/systemd/system/gz-beat-shipper.service
+/etc/%{name}/beatshipper-conf.yml
+/lib/systemd/system/beatshipper.service
 
 %changelog
  # END SPEC

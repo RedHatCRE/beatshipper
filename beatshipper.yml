@@ -1,0 +1,8 @@
+---
+host: "localhost"
+port: "5044"
+path:
+  - "/rhos-infra-dev-netapp/jenkins-logs/rcj/*/*/*/var/log/extra/rpm-list.txt.gz"
+  - "/rhos-infra-dev-netapp/jenkins-logs/rcj/*/*/*/var/log/extra2/rpm-list.txt.gz"
+registry: "shipper_registry.json"
+recheck: 5s
