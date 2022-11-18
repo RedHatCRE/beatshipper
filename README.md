@@ -42,7 +42,7 @@ Use "beatshipper [command] --help" for more information about a command.
 
 ## Configuration
 
-We should create the configuration in the following file `/etc/beatshipper/beatshipper-conf.yml` located in the root of the project. We should add the following fields:
+We should create the configuration in the following file `/etc/beatshipper/beatshipper-conf.yml`. An example is located in the root of the project. We should add the following fields:
 
 - `host`
 - `port`
