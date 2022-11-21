@@ -16,8 +16,11 @@ package main
 
 import (
 	"beatshipper/cmd/shipper"
+	"log"
 )
 
 func main() {
-	shipper.Execute()
+	if err := shipper.Execute(); err != nil {
+		log.Fatal(err)
+	}
 }
