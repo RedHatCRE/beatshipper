@@ -15,22 +15,27 @@
 package registry
 
 import (
+	"beatshipper/pkg/filehandler"
 	"encoding/json"
-	"gz-beat-shipper/pkg/filehandler"
 	"log"
+	"time"
 )
 
 type Registry struct {
-	ParsedFiles []File `json:"ParsedFile"`
+	ParsedFiles []ParsedFiles
 }
 
-type File struct {
-	Name string `json:"name"`
+type ParsedFiles struct {
+	Name string    `json:"name"`
+	Date time.Time `json:"date"`
 }
 
 // Append File struct to Registry Struct with ParsedFiles slice
-func (r *Registry) AppendFileToRegistry(f File) {
-	r.ParsedFiles = append(r.ParsedFiles, f)
+func (r *Registry) AppendFileToRegistry(f string) {
+	r.ParsedFiles = append(r.ParsedFiles, ParsedFiles{
+		Name: f,
+		Date: time.Now(),
+	})
 }
 
 // Convert Registry Struct to a JSON string
@@ -66,9 +71,6 @@ func (r *Registry) IsFileInRegistry(f string) bool {
 */
 func StoreFilesIntoRegistry(fileNames []string, r Registry, registryFileLocation string) {
 	for _, f := range fileNames {
-		f := File{
-			Name: f,
-		}
 		r.AppendFileToRegistry(f)
 		log.Print("Added to registry: ", f)
 	}

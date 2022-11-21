@@ -1,5 +1,5 @@
 ---
-name: "gz-beat-shipper"
+name: "beatshipper"
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "shipper-binary"
-          path: ./builds/gz-beat-shipper
+          path: ./builds/beatshipper
   rpm-packaging:
     runs-on: ubuntu-latest
     needs: build-and-upload-binary
@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           dnf install rpm-build -y
-          rpmbuild -v -bb --define "_topdir `echo \"${GITHUB_WORKSPACE}\"`" packing_manager_specs/RPM/rpmbuild/SPECS/gz-beat-shipper.spec
+          rpmbuild -v -bb --define "_topdir `echo \"${GITHUB_WORKSPACE}\"`" packing_manager_specs/RPM/rpmbuild/SPECS/beatshipper.spec
       - name: "Publish RPM package as artifact"
         uses: actions/upload-artifact@v3
         with:

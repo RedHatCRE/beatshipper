@@ -8,14 +8,14 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-const ConfigurationPath = "/etc/gz-beat-shipper/gz-beat-shipper-conf.yml"
+const ConfigurationPath = "/etc/beatshipper/beatshipper-conf.yml"
 
 type Configuration struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	Path     string `yaml:"path"`
-	Registry string `yaml:"registry"`
-	Recheck  string `yaml:"recheck"`
+	Host     string   `yaml:"host"`
+	Port     string   `yaml:"port"`
+	Paths    []string `yaml:"path"`
+	Registry string   `yaml:"registry"`
+	Recheck  string   `yaml:"recheck"`
 }
 
 func (c *Configuration) GetConfiguration() *Configuration {

@@ -84,6 +84,15 @@ func CreateEmptyJsonFileIfNotExists(fileName string) {
 	}
 }
 
+func GetFileContentByExtension(fileName string) string {
+	extension := filepath.Ext(fileName)
+	if extension == ".gz" {
+		return GetGzFileContent(fileName)
+	} else {
+		return GetFileContent(fileName)
+	}
+}
+
 // Get the content of a file and convert it from bytes to string
 func GetFileContent(fileName string) string {
 	fileContent, err := os.Open(fileName)
@@ -123,4 +132,20 @@ func GetGzFileContent(fileName string) string {
 	}
 
 	return string(contentBytes)
+}
+
+// Find files based in a list of paths  using glob
+func FoundFilesByPaths(paths []string) []string {
+	var fileNames []string
+	for _, path := range paths {
+		names, err := filepath.Glob(path)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fileNames = append(fileNames, names...)
+	}
+
+	return fileNames
 }
