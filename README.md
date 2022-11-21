@@ -43,7 +43,12 @@ beatshipper version 0.0.1
 
 ## Configuration
 
-We should create the configuration in the following file `/etc/beatshipper/beatshipper-conf.yml`. An example is located in the root of the project. We should add the following fields:
+We should create the configuration in any of the following both locations:
+
+- `/etc/beatshipper/beatshipper-conf.yml`
+- `$HOME/.config/beatshipper-conf.yml`
+
+An example is located in the root of the project. We should add the following fields:
 
 - `host`
 - `port`

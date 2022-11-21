@@ -1,14 +1,11 @@
 package configs
 
 import (
-	"io/ioutil"
 	"log"
 	"time"
 
-	yaml "gopkg.in/yaml.v3"
+	"github.com/spf13/viper"
 )
-
-const ConfigurationPath = "/etc/beatshipper/beatshipper-conf.yml"
 
 type Configuration struct {
 	Host     string   `yaml:"host"`
@@ -19,13 +16,17 @@ type Configuration struct {
 }
 
 func (c *Configuration) GetConfiguration() *Configuration {
-	yamlFile, err := ioutil.ReadFile(ConfigurationPath)
+	viper.SetConfigName("beatshipper-conf")
+	viper.AddConfigPath("/etc/beatshipper/")
+	viper.AddConfigPath("$HOME/.config")
+
+	err := viper.ReadInConfig()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = yaml.Unmarshal(yamlFile, c)
+	err = viper.Unmarshal(&c)
 
 	if err != nil {
 		log.Fatal(err)
