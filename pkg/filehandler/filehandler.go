@@ -16,6 +16,7 @@ package filehandler
 
 import (
 	"compress/gzip"
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -26,7 +27,8 @@ import (
 
 // It opens the gzip file and uses the Reader to load the content
 func GzipFileReader(gzFilePath string) *gzip.Reader {
-	gzipFile, err := os.Open(gzFilePath)
+
+	gzipFile, err := os.Open(filepath.Clean(gzFilePath))
 
 	if err != nil {
 		log.Fatal(err)
@@ -38,7 +40,11 @@ func GzipFileReader(gzFilePath string) *gzip.Reader {
 		log.Fatal(err)
 	}
 
-	gzipReader.Close()
+	err = gzipReader.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Print("Content opened of: " + gzFilePath)
 	return gzipReader
@@ -46,13 +52,17 @@ func GzipFileReader(gzFilePath string) *gzip.Reader {
 
 // Creates an empty file if not exists and copy the content of the gzip.Reader to this one
 func CopyGzipContentToFile(gzipReader io.Reader, destinationPath string) {
-	fileWriter, err := os.Create(destinationPath)
+	fileWriter, err := os.Create(filepath.Clean(destinationPath))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer fileWriter.Close()
+	defer func() {
+		if err := fileWriter.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	_, err = io.Copy(fileWriter, gzipReader)
 
@@ -77,11 +87,13 @@ func JoinDirAndPath(dirName string, fileName string) string {
 func CreateEmptyJsonFileIfNotExists(fileName string) {
 	_, err := os.Stat(fileName)
 
-	if err != nil {
-		if os.IsNotExist(err) {
-			ioutil.WriteFile(fileName, []byte("{}"), 400)
+	if errors.Is(err, os.ErrNotExist) {
+		err = ioutil.WriteFile(fileName, []byte("{}"), 0600)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
+
 }
 
 func GetFileContentByExtension(fileName string) string {
@@ -95,30 +107,41 @@ func GetFileContentByExtension(fileName string) string {
 
 // Get the content of a file and convert it from bytes to string
 func GetFileContent(fileName string) string {
-	fileContent, err := os.Open(fileName)
+	fileContent, err := os.Open(filepath.Clean(fileName))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer fileContent.Close()
+	defer func() {
+		if err := fileContent.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	fileContentBytes, _ := ioutil.ReadAll(fileContent)
 	return string(fileContentBytes)
 }
 
 func WriteFileContent(fileName string, data []byte) {
-	err := ioutil.WriteFile(fileName, data, 0644)
+	err := ioutil.WriteFile(fileName, data, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func GetGzFileContent(fileName string) string {
-	fh, err := os.Open(fileName)
+	fh, err := os.Open(filepath.Clean(fileName))
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer fh.Close()
+
+	defer func() {
+		if err := fh.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	fhGz, err := gzip.NewReader(fh)
 	if err != nil {
