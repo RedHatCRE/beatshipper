@@ -43,7 +43,7 @@ func GzipFileReader(gzFilePath string) *gzip.Reader {
 	err = gzipReader.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print("Error closing filehandle: ", err)
 	}
 
 	log.Print("Content opened of: " + gzFilePath)
@@ -92,6 +92,8 @@ func CreateEmptyJsonFileIfNotExists(fileName string) {
 		if err != nil {
 			log.Fatal(err)
 		}
+	} else if err != nil {
+		log.Fatal(err)
 	}
 
 }
