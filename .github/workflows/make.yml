@@ -19,6 +19,10 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ">=1.18.0"
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
       - name: "Run Makefile"
         run: make
       - name: "Publish binary as artifact"

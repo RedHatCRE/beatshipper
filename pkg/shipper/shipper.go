@@ -65,7 +65,7 @@ func Run() {
 // Get the content of files and create a batch with event interface
 // Send the batch to the server
 // Closes the conexion
-func SendBatch(files []string, config configs.Configuration) error {
+func SendBatch(files []string, config configs.Configuration) {
 	conn, err := client.SyncDial(config.Host + ":" + config.Port)
 
 	if err != nil {
@@ -96,9 +96,11 @@ func SendBatch(files []string, config configs.Configuration) error {
 
 	err = conn.Close()
 
-	log.Print("Conexion closed")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	return err
+	log.Print("Conexion closed")
 }
 
 func getFilesNotProcessed(files []string, r registry.Registry) []string {
