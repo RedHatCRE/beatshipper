@@ -2,6 +2,7 @@ package configs
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -16,11 +17,17 @@ type Configuration struct {
 }
 
 func (c *Configuration) GetConfiguration() *Configuration {
+	userDirConfig, err := os.UserConfigDir()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	viper.SetConfigName("beatshipper-conf")
 	viper.AddConfigPath("/etc/beatshipper/")
-	viper.AddConfigPath("$HOME/.config")
+	viper.AddConfigPath(userDirConfig)
 
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 
 	if err != nil {
 		log.Fatal(err)

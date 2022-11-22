@@ -19,7 +19,6 @@ import (
 	"beatshipper/pkg/filehandler"
 	"beatshipper/pkg/registry"
 	"log"
-	"os"
 	"time"
 
 	client "github.com/elastic/go-lumber/client/v2"
@@ -49,8 +48,7 @@ func Run() {
 	files := filehandler.FoundFilesByPaths(config.Paths)
 
 	if len(files) < 1 {
-		log.Print("There aren't files to process")
-		os.Exit(0)
+		log.Fatal("There aren't files to process")
 	}
 
 	filesToProcess := getFilesNotProcessed(files, *register)
