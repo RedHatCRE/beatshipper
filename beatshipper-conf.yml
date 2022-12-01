@@ -9,3 +9,4 @@ path:
 registry: "shipper_registry.json"
 # time of recheck (re-process) if there are new pending files to send
 recheck: 5s
+log_source: 'gzip_files'
