@@ -55,6 +55,7 @@ An example is located in the root of the project. We should add the following fi
 - `path` array of paths that will be exploded using `GLOB`
 - `registry`: the name of the file where we'll store the processed files.
 - `recheck` time of recheck (re-process) if there are new pending files to send
+- `logsource` very useful in logstash to handle conditions based on the name of the source
 
 ## Usage:
 

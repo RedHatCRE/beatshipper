@@ -9,11 +9,12 @@ import (
 )
 
 type Configuration struct {
-	Host     string   `yaml:"host"`
-	Port     string   `yaml:"port"`
-	Paths    []string `yaml:"path"`
-	Registry string   `yaml:"registry"`
-	Recheck  string   `yaml:"recheck"`
+	Host      string   `yaml:"host"`
+	Port      string   `yaml:"port"`
+	Paths     []string `yaml:"path"`
+	Registry  string   `yaml:"registry"`
+	Recheck   string   `yaml:"recheck"`
+	LogSource string   `yaml:"logsource"`
 }
 
 func (c *Configuration) GetConfiguration() *Configuration {
