@@ -19,6 +19,7 @@ import (
 	"beatshipper/pkg/filehandler"
 	"beatshipper/pkg/registry"
 	"log"
+	"os"
 	"time"
 
 	client "github.com/elastic/go-lumber/client/v2"
@@ -42,6 +43,8 @@ func setup() (configs.Configuration, *registry.Registry) {
 }
 
 func Run() {
+	defer timeTrack(time.Now(), "Beatshipper")
+
 	config, register := setup()
 
 	// Globbing all paths according to the pattern
@@ -74,11 +77,31 @@ func SendBatch(files []string, config configs.Configuration) {
 
 	log.Print("Conexion successful with: ", config.Host+":"+config.Port)
 
+	hostName, err := os.Hostname()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var batch []interface{}
 
 	for _, filePath := range files {
-		log.Print("Processing: " + filePath)
-		batch = append(batch, makeEvent(filehandler.GetFileContentByExtension(filePath)))
+		data := map[string]interface{}{
+			"message": filehandler.GetFileContentByExtension(filePath),
+			"host": map[string]interface{}{
+				"name": hostName,
+			},
+			"log": map[string]interface{}{
+				"file": map[string]interface{}{
+					"path": filePath,
+				},
+			},
+			"@timestamp": time.Now(),
+			"log_source": config.LogSource,
+			"type":       "beatshipper",
+		}
+
+		batch = append(batch, data)
 	}
 
 	chunkedBatch := chunkInterfaceSlice(batch, 5)
@@ -88,7 +111,7 @@ func SendBatch(files []string, config configs.Configuration) {
 		_, err = conn.Send(batchSlices)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
 		}
 
 		log.Print("Sending batch of data...")
@@ -129,11 +152,6 @@ func chunkInterfaceSlice(slice []interface{}, size int) [][]interface{} {
 	return chunks
 }
 
-// Create a valid event that can be received by logstash
-func makeEvent(message string) interface{} {
-	return map[string]interface{}{
-		"@timestamp": time.Now(),
-		"type":       "filebeat",
-		"message":    message,
-	}
+func timeTrack(start time.Time, name string) {
+	log.Printf("%s took %s", name, time.Since(start))
 }
