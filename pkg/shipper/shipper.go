@@ -18,8 +18,10 @@ import (
 	"beatshipper/configs"
 	"beatshipper/pkg/filehandler"
 	"beatshipper/pkg/registry"
+	"errors"
 	"log"
 	"os"
+	"syscall"
 	"time"
 
 	client "github.com/elastic/go-lumber/client/v2"
@@ -45,7 +47,8 @@ func setup() (configs.Configuration, *registry.Registry) {
 func Run() {
 	defer timeTrack(time.Now(), "Beatshipper")
 
-	config, register := setup()
+	config, memoryRegistry := setup()
+	registryFileLocation := config.Registry
 
 	// Globbing all paths according to the pattern
 	files := filehandler.FoundFilesByPaths(config.Paths)
@@ -54,21 +57,20 @@ func Run() {
 		log.Fatal("There aren't files to process")
 	}
 
-	filesToProcess := getFilesNotProcessed(files, *register)
+	filesToProcess := getFilesNotProcessed(files, *memoryRegistry)
 
 	if len(filesToProcess) < 1 {
-		log.Print("There aren't files to process")
-	} else {
-		SendBatch(filesToProcess, config)
-		registry.StoreFilesIntoRegistry(filesToProcess, *register, config.Registry)
+		log.Fatal("There aren't files to process")
 	}
+
+	processData(filesToProcess, config, memoryRegistry, registryFileLocation)
 }
 
 // Creates the conexion
 // Get the content of files and create a batch with event interface
 // Send the batch to the server
 // Closes the conexion
-func SendBatch(files []string, config configs.Configuration) {
+func processData(filesToProcess []string, config configs.Configuration, memoryRegistry *registry.Registry, registryFileLocation string) {
 	conn, err := client.SyncDial(config.Host + ":" + config.Port)
 
 	if err != nil {
@@ -85,7 +87,7 @@ func SendBatch(files []string, config configs.Configuration) {
 
 	var batch []interface{}
 
-	for _, filePath := range files {
+	for _, filePath := range filesToProcess {
 		data := map[string]interface{}{
 			"message": filehandler.GetFileContentByExtension(filePath),
 			"host": map[string]interface{}{
@@ -104,17 +106,31 @@ func SendBatch(files []string, config configs.Configuration) {
 		batch = append(batch, data)
 	}
 
-	chunkedBatch := chunkInterfaceSlice(batch, 5)
+	// Chunk the amount of batches into a slice to send them in different groups and not
+	// load the destination
+	chunkedBatch := chunkInterfaceSlice(batch, 30)
+
+	var processedFiles []string
 
 	for _, batchSlices := range chunkedBatch {
 
 		_, err = conn.Send(batchSlices)
 
 		if err != nil {
-			log.Print(err)
+			// If the destination service configuration is wrong but the service is still up (it was able to connect)
+			// it won't be able to process the information so we should handle the error that is more common
+			if errors.Is(err, syscall.EPIPE) {
+				log.Printf("EPIPE error. Check the destination configuration [%s]", err)
+			} else {
+				log.Print(err)
+			}
+			continue
 		}
 
 		log.Print("Sending batch of data...")
+
+		// We need to add into the registry just the files that have been sent successfully
+		appendFilesInSliceOfBatch(&processedFiles, batchSlices)
 	}
 
 	err = conn.Close()
@@ -124,6 +140,18 @@ func SendBatch(files []string, config configs.Configuration) {
 	}
 
 	log.Print("Conexion closed")
+
+	if len(processedFiles) > 0 {
+		registry.StoreFilesIntoRegistry(processedFiles, *memoryRegistry, registryFileLocation)
+	}
+}
+
+// We need to access to the files of a nested map[string]interface{} data, for this we should use a type of reflection
+// to access to every key of the nested map
+func appendFilesInSliceOfBatch(files *[]string, batch []interface{}) {
+	for i := 0; i < len(batch); i += 1 {
+		*files = append(*files, batch[i].(map[string]interface{})["log"].(map[string]interface{})["file"].(map[string]interface{})["path"].(string))
+	}
 }
 
 func getFilesNotProcessed(files []string, r registry.Registry) []string {
