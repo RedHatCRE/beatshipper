@@ -7,4 +7,4 @@ paths:
   - "/jenkinst-test/jenkins-logs/rcj/*/*/*/var/log/extra2/rpm-list.txt.gz"
 # the name of the file where we'll store the processed files.
 registry: "shipper_registry.json"
-log_source: 'gzip_files'
+logsource: 'gzip_files'
