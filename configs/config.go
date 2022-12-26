@@ -3,6 +3,7 @@ package configs
 import (
 	"log"
 	"os"
+	"reflect"
 
 	"github.com/spf13/viper"
 )
@@ -41,5 +42,19 @@ func (c *Configuration) GetConfiguration() *Configuration {
 		log.Fatal(err)
 	}
 
+	checkConfigurationFields(*c)
+
 	return c
+}
+
+// Check if all the fields of the configuration struct have value
+// Check if the field key of the configuration exist
+func checkConfigurationFields(c Configuration) {
+	structFields := reflect.ValueOf(c)
+
+	for i := 0; i < structFields.NumField(); i++ {
+		if structFields.Field(i).IsZero() {
+			log.Fatalf("%s field of struct empty.", structFields.Type().Field(i).Name)
+		}
+	}
 }
