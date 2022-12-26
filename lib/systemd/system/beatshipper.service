@@ -4,14 +4,10 @@ Documentation=https://github.com/RedHatCRE/beatshipper/blob/main/README.md
 After=network.target
 
 [Service]
+# Working with timers:
+Type=oneshot
 WorkingDirectory=/etc/beatshipper
-Type=simple
-ExecStart=/usr/sbin/beatshipper
-Restart=on-failure
-RestartSec=10
-# TODO: Do we want to keep the logs in syslog?
-StandardOutput=syslog
-StandardError=syslog
+ExecStart=/usr/sbin/beatshipper send
 SyslogIdentifier=beatshipper
 [Install]
 WantedBy=multi-user.target

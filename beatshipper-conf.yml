@@ -7,6 +7,4 @@ path:
   - "/jenkinst-test/jenkins-logs/rcj/*/*/*/var/log/extra2/rpm-list.txt.gz"
 # the name of the file where we'll store the processed files.
 registry: "shipper_registry.json"
-# time of recheck (re-process) if there are new pending files to send
-recheck: 5s
 log_source: 'gzip_files'

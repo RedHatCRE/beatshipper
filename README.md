@@ -57,6 +57,35 @@ An example is located in the root of the project. We should add the following fi
 - `recheck` time of recheck (re-process) if there are new pending files to send
 - `logsource` very useful in logstash to handle conditions based on the name of the source
 
+# Configuration through SystemD
+
+We have created two SystemD files:
+
+- `service` file: it specifies the binary that will execute the service
+- `timer` file: we are gonna execute the service as timer.
+
+By default the timer will launch the service in one shoot type every 30 minutes (`*:0/30`). If we wanna change the time we should change the `OnCalendar` directime in the `timer` file.
+
+These files are being coppied to the following directory `/lib/systemd/system/` if we install the generated RPM package.
+
+We can enable and start the `timer` with the following commands:
+
+```
+$ systemctl enable beatshipper.timer
+$ systemctl start beatshipper.timer
+```
+
+We can check if the timer has been activated:
+
+```
+$ systemctl list-timers | grep beatshipper -B1
+NEXT                        LEFT          LAST                        PASSED       UNIT                           ACTIVATES
+Mon 2022-12-26 16:00:00 CET 27min left    Mon 2022-12-26 15:30:32 CET 2min 12s ago beatshipper.timer              beatshipper.service
+
+$ journalctl -u beatshipper.timer
+dic 26 15:30:32 user systemd[1]: Started Beatshipper execution schedule.
+```
+
 ## Usage:
 
 If we have the right configuration, we can start the program using the following command - It will read the configuration, start checking if there are pending packages that aren't in the registry and send them to the server that is listening using `beats`- e.g. a logstash instance with the `beats` module -:
