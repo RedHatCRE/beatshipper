@@ -1,0 +1,15 @@
+[Unit]
+Description=Beatshipper execution schedule
+# Allow manual start/stop
+RefuseManualStart=no
+RefuseManualStop=no
+
+[Timer]
+Persistent=true
+OnBootSec=120
+# Every 30 minutes
+OnCalendar=*:0/30
+Unit=beatshipper.service 
+
+[Install]
+WantedBy=timers.target

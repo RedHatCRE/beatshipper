@@ -3,7 +3,7 @@ package configs
 import (
 	"log"
 	"os"
-	"time"
+	"reflect"
 
 	"github.com/spf13/viper"
 )
@@ -13,7 +13,6 @@ type Configuration struct {
 	Port      string   `yaml:"port"`
 	Paths     []string `yaml:"path"`
 	Registry  string   `yaml:"registry"`
-	Recheck   string   `yaml:"recheck"`
 	LogSource string   `yaml:"logsource"`
 }
 
@@ -21,12 +20,15 @@ func (c *Configuration) GetConfiguration() *Configuration {
 	userDirConfig, err := os.UserConfigDir()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+	}
+
+	if len(userDirConfig) > 0 {
+		viper.AddConfigPath(userDirConfig)
 	}
 
 	viper.SetConfigName("beatshipper-conf")
 	viper.AddConfigPath("/etc/beatshipper/")
-	viper.AddConfigPath(userDirConfig)
 
 	err = viper.ReadInConfig()
 
@@ -40,22 +42,19 @@ func (c *Configuration) GetConfiguration() *Configuration {
 		log.Fatal(err)
 	}
 
+	checkConfigurationFields(*c)
+
 	return c
 }
 
-func (c *Configuration) GetRecheckInSeconds() int32 {
-	t, err := time.ParseDuration(c.Recheck)
+// Check if all the fields of the configuration struct have value
+// Check if the field key of the configuration exist
+func checkConfigurationFields(c Configuration) {
+	structFields := reflect.ValueOf(c)
 
-	if err != nil {
-		log.Fatal(err)
+	for i := 0; i < structFields.NumField(); i++ {
+		if structFields.Field(i).IsZero() {
+			log.Fatalf("%s field of struct empty.", structFields.Type().Field(i).Name)
+		}
 	}
-
-	s := t.Seconds()
-	return int32(s)
-}
-
-func (c *Configuration) GetRecheckDuration() time.Duration {
-	recheckSeconds := c.GetRecheckInSeconds()
-	recheckDuration := time.Second * time.Duration(recheckSeconds)
-	return recheckDuration
 }

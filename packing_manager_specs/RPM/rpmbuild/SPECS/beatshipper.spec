@@ -25,7 +25,7 @@ install -m 0755 -d %{buildroot}/lib/systemd/system/
 # Copy files with right permissions:
 install -m 0755 %{_rpmdir}%{name} %{buildroot}/usr/sbin/%{name}
 install -m 0644 %{_rpmdir}/beatshipper-conf.yml %{buildroot}/etc/%{name}/
-install -m 0644 %{_rpmdir}/lib/systemd/system/beatshipper.service %{buildroot}/lib/systemd/system/
+install -m 0644 %{_rpmdir}/lib/systemd/system/* %{buildroot}/lib/systemd/system/
 
 %post
 
@@ -35,7 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 /usr/sbin/%{name}
 /etc/%{name}/beatshipper-conf.yml
-/lib/systemd/system/beatshipper.service
+/lib/systemd/system/
 
 %changelog
  # END SPEC
